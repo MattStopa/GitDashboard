@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Git Server Status</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic" media="screen" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" media="screen" rel="stylesheet" />
+    <%= stylesheet_link_tag 'font-awesome', media: 'all' %>
+  </head>
+
+  <style>
+    body {
+      background-color: #fff;
+      font-family: 'Open Sans';
+    }
+
+    .box {
+      background-color: #F5F5F5;
+      color: #7F6666;
+      padding: 17px;
+      min-height: 87px;
+      margin-bottom: 13px;
+      max-height: 20000px;
+    }
+
+    .logo {
+      font-size: 60px;
+      text-shadow: 0 1px 0 rgba(27, 0, 0, 0.5);
+      font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      letter-spacing: -.05em;
+      margin-top: 8px;
+      margin-bottom: 8px;
+      color: rgb(238, 161, 255);;
+      letter-spacing: -2px;
+    }
+
+    .container {
+      width: 1200px;
+    }
+
+    .title {
+      float: left;
+      margin-left: 20px;
+      margin-top: 7px;
+      font-weight: 200;
+    }
+
+    .header {
+      background-color: #cce4ff;
+      color: #5697e8;
+    }
+
+    .header .tab {
+      padding: 10px;
+      display: inline-block;
+      cursor: pointer;
+      transition:all .2s ease;
+    }
+
+    .header .tab:first-child{
+      margin-left: 20px;
+
+    }
+
+    .header .tab:hover {
+      background-color: #5697E8;;
+      color: #fff;
+
+    }
+
+    .selected {
+      background-color: #5697E8;
+      color: #fff;
+    }
+
+    .line-row {
+      margin-top: 5px;
+    }
+
+    .line-row:hover .title {
+      font-weight: 600;
+      -webkit-transition: margin-left .2s linear;
+      -webkit-transition: font-weight .1s linear;
+    }
+
+    .selectors {
+      width: 250px;
+      line-height: 22px;
+      margin-top: 10px;
+      margin-right: 8px;
+      float: right;
+      font-size: 18px;
+      color: #000;
+    }
+
+    tr {
+      transition:all .3s ease;
+      background-color:#fff;
+      cursor: pointer;
+    }
+
+   tr:hover td {
+     background-color: rgba(80, 163, 212, 0.14);
+   }
+
+    tr.ng-move         {
+      -webkit-transform: scale(0);
+      transform: scale(0);
+    }
+
+    tr.ng-move-active {
+      -webkit-transform: scale(1.0);
+      transform: scale(1.0);
+    }
+
+    tr.ng-enter         {
+      -webkit-transform: scale(0);
+      transform: scale(0);
+    }
+
+    tr.ng-enter-active {
+      -webkit-transform: scale(1.0);
+      transform: scale(1.0);
+    }
+
+    tr.ng-leave         {
+      -webkit-transform: scale(1);
+      transform: scale(1);
+    }
+
+    tr.ng-leave-active {
+      -webkit-transform: scale(.0);
+      transform: scale(.0);
+    }
+
+    .dropdown-content {
+      position: absolute;
+      margin-left: -799px;
+      margin-top: 25px;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      width: 800px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      padding: 12px 16px;
+      display: none;
+      border: 5px solid;
+    }
+
+    .abbrev:hover .dropdown-content {
+      display: inline-block;
+    }
+
+    .old-commit {
+      border: 2px solid #E21D1D;
+      padding: 6px;
+      border-radius: 5px;
+      background-color: #F5A7A7;
+      color: #fff;
+      font-size: 12px;
+    }
+
+    .story {
+      border: 5px solid #FFFFFF;
+      border-radius: 3px;
+      padding: 1px;
+      background-color: #FFFFFF;
+      color: #337AB9;
+    }
+
+    .bug {
+      margin-right: 3px;
+      border: 5px solid #FFFFFF;
+      border-radius: 3px;
+      padding: 1px;
+      background-color: #FFFFFF;
+      color: #FFA81B;
+    }
+
+    .tool-tip {
+      position: absolute;
+      margin-top: -39px;
+      background: #FFF;
+      display: none;
+      color: #FFFFFF;
+      margin-left: -40px;
+      border: 2px solid #D0A326;
+      padding: 3px;
+      border-radius: 4px;
+      background: #EAB78B;
+    }
+
+    .story:hover .tool-tip, .bug:hover .tool-tip {
+      display: inline-block;
+    }
+
+    .search {
+      float: right;
+      margin-top: 8px;
+      margin-right: 16px;
+      border: none;
+      border-radius: 3px;
+      padding-left: 10px;
+    }
+
+    .show-all {
+      padding: 5px;
+      margin-top: 16px;
+      border: 2px solid #BDBDBD;
+      display: inline-block;
+      border-radius: 7px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .disclaimer {
+      float: right;
+      margin-top: -24px;
+      margin-right: 5px;
+    }
+
+    .latest-features {
+      text-decoration: underline;
+    }
+
+    .latest-features .dropdown-content {
+      width: 500px;
+      margin-left: -150px;
+    }
+
+    .latest-features:hover .dropdown-content {
+      display: inline-block;
+    }
+
+  </style>
+  <body>
+
+    <div class='container'>
+      <div class='logo'>Git Dashboard</div>
+      <div style ='float; left'>Last updated <%= @last_updated %> minutes ago | <a class='latest-features' href='#'>  Latest Features
+        <div class='dropdown-content'>
+          <pre>
+8/18/15
+- Search commits by author by using 'author: whoever'
+- Added last updated at time
+- Added `Latest Features`
+- Added filters to work automatically on tab switch. [Bug fix]
+          </pre>
+        </div>
+      </a></div>
+      <div class='disclaimer'>For more info contact Matt Stopa</div>
+      <div ng-app="GitDashboard" ng-controller='MainCTRL'>
+        <div ng-if='errorState' id='error' class='alert alert-danger'>
+          <strong> Error </strong>
+          Are you sure the server is running? Couldn't save, there was an error connecting.
+        </div>
+
+        <div class='header'>
+            <div class='tab' ng-repeat="branch in branches" ng-class="currentPage == branch ? 'selected' : ''" ng-click='selectBranch(branch)' >
+              <i class="fa fa-share-alt fa-lg" style='margin-right: 5px'></i>
+                {{branch}}
+            </div>
+            <input type='text' class='search' placeholder='search' ng-model='searchTerm'>
+            <div style='float:right; margin-top: 10px;
+    margin-right: 66px;'>
+              <span class='bug'>
+                <i class="fa fa-bug" aria-hidden="true"></i>
+                <span style='padding-left: 5px'>{{stats.bugs}}</span>
+                <div class='tool-tip'>Bugs fixed in selected branch</div>
+              </span>
+              <span class='story'>
+                <i class="fa fa-newspaper-o" aria-hidden="true"></i>
+                <span style='padding-left: 5px'>{{stats.stories}}</span>
+                <div class='tool-tip'>Stories fixed in selected branch</div>
+              </span>
+            </div>
+        </div>
+        <div >
+          <div class='box'>
+            <table style='width: 100%;border-collapse: separate;border-spacing: 0 2px;'>
+              <tr>
+                <th></th>
+                <th style='padding-right: 22px;'>Story/Defect</th>
+                <th>Key</th>
+                <th>Description</th>
+                <th style='padding-right: 22px;'>Commit</th>
+                <th style='padding-right: 22px;'>Author</th>
+                <th style='width: 80px'>Date</th>
+              </tr>
+              <tr ng-repeat="item in filteredList | limitTo:limitNumber">
+                <td class='index' style='font-weight: 800; width: 30px;padding-left: 8px; padding-top: 6px; padding-bottom: 6px'>
+                  {{$index + 1}}
+                </td>
+                <td>
+
+                  <a ng-if="item.rally_story" target='_blank' href="https://rally1.rallydev.com/#/search?keywords={{item.story}}">{{item.story}}</a>
+                  <a ng-if="!item.rally_story && item.valid_story" style='color: #FFCF81' target='_blank' href="your_jira_url{{item.story}}">{{item.story}}</a>
+                  </td>
+                <td>{{item.key}}</td>
+                <td class="description" style='color: #7DAF0C; font-size: 12px; font-weight: 600;'>
+
+                  {{item.description}}
+                </td>
+                <td class='abbrev'>
+                   <div class='dropdown-content'>
+                    <pre>{{item.raw}}</pre>
+                  </div>
+                  <a target="_blank" href="you_github_url{{item.commit_abrev}}">
+
+                  {{item.commit_abrev}}</a></td>
+                <td>{{item.author}}</td>
+                <td>
+                  <div class='old-commit' ng-if="item.days_ago > 14">
+                    {{item.days_ago}} days old
+                  </div>
+                  <span ng-if="item.days_ago < 14">
+                    {{item.date}}
+                  </span>
+                </td>
+              </tr>
+
+            </table>
+
+            <div class='show-all' ng-click='showAll()'> Show All Results</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= javascript_include_tag 'jquery'%>
+    <%= javascript_include_tag 'angular'%>
+    <%= javascript_include_tag 'angular-animate'%>
+
+    <script>
+      var data = {}
+      data = <%= raw @results.to_json %>
+      var stats = <%= raw @stats.to_json %>
+      angular
+      .module('GitDashboard',['ngAnimate'])
+      .controller('MainCTRL', MainController);
+
+      function MainController($scope) {
+        $scope.limitNumber = 50;
+        $scope.branches = Object.keys(data)
+        $scope.data = data['master'];
+        $scope.filteredList = data['master'];
+        $scope.currentPage = 'master'
+        $scope.searchIsWaiting = false;
+
+        $scope.showAll = function() {
+          $scope.limitNumber = 20000;
+        }
+
+        $scope.selectBranch = function(branch) {
+          $scope.currentPage = branch
+          $scope.filteredList = data[branch]
+          $scope.stats = stats[branch]
+          $scope.limitNumber = 50;
+          $scope.runSearch(1)
+        }
+
+        $scope.$watch('searchTerm', function () {
+          $scope.runSearch()
+        })
+
+        $scope.runSearch = function(timeout) {
+          if($scope.searchIsWaiting) { console.log("search isn't waiting"); return }
+          $scope.searchIsWaiting = true;
+
+          timeout_length = timeout || 1000
+
+          setTimeout(function() {
+            if($scope.searchTerm == '' || $scope.searchTerm == undefined ) {
+              $scope.filteredList = data[$scope.currentPage];
+              $scope.searchIsWaiting = false;
+              $scope.$apply()
+              return;
+            }
+            var tempList = []
+            var author = $scope.searchTerm.split("author:")
+            var search = new RegExp($scope.searchTerm, "i")
+            $.each(data[$scope.currentPage], function(idx, item) {
+              if(author.length > 1) {
+                var authorSearch = new RegExp(author[1].trim(), "i")
+                if (item.author.search(authorSearch) > -1 ){
+                  tempList.push(item)
+                }
+              }
+              else if(item.raw.search(search) > 0) {
+                tempList.push(item)
+              }
+            })
+
+            $scope.filteredList = tempList
+            $scope.searchIsWaiting = false;
+            $scope.$apply()
+          }, timeout_length)
+        }
+      }
+   </script>
+  </body>
+</html>
